@@ -16,91 +16,128 @@
 # See license.txt
 #*****************************************************************************
 
-EXAMPLES::
+In this document we do verifications and sanity-checks for some of the
+statements in *Explicit supersingular cyclic curves*.
+We do this for each of the three sections 2, 3, and 4.
+
+
+The results in **Section 2** (about M(6)) do not depend on computer verification.
+Even the verification that the curve has good reduction outside of 3 is easy
+to do by hand. We do the following sanity checks.
+
+Check that the discriminant of f is consistent with bad reduction only at 3::
 
     sage: load("supersingular.sage")
     sage: [(m, f)] = curvesM6
+    sage: m, f
+    (3, x^4 - x)
     sage: f.discriminant().factor()
     -1 * 3^3
 
-    sage: P1 = [p for p in prime_range(10) if p % 3 == 1]
-    sage: P2 = [p for p in prime_range(10) if p % 3 == 2]
-    sage: for p in P2:
-    ....:     print(p%3, p, newton_polygon(m, f, p)[2])
+Check that it is supersingular ('ss') at the primes 2 and 5 to which Theorem 2.1 applies::
+
+    sage: for p in [2, 5]:
+    ....:     print(p % 3, p, newton_polygon(m, f, p)[2])
     2 2 ss
     2 5 ss
-    sage: for p in P1:
-    ....:     print(p%3, p, newton_polygon(m, f, p)[2])
+
+Check that the slopes of the Newton polygon at 7 (to which Theorem 2.1 does not apply)
+are not all equal to 1/2::
+
+    sage: p = 7
+    sage: print(p % 3, p, newton_polygon(m, f, p)[2])
     1 7 [1/3, 1/3, 1/3, 2/3, 2/3, 2/3]
 
-Which verifies the theorem about M(6) for the primes 2 and 5 (and shows that it does not hold for p = 7).
 
-We continue with M8::
+We go on with **Section 3** and the family M(8). We do this curve by curve.
+
+We verify that the first curve has good reduction outside 2 and 3::
 
     sage: (m, f) = curvesM8[0]
+    sage: m, f
+    (2, x^7 + 6*x^5 + 9*x^3 + x)
     sage: f.discriminant().factor(), m.factor()
     (-1 * 2^6 * 3^8, 2)
 
-    sage: P3 = [p for p in prime_range(10) if p % 4 == 3 and not p == 3]
-    sage: Pother = [p for p in prime_range(10) if p % 4 != 3 and not p == 2]
-    sage: for p in P3:
-    ....:     print(p%4, p, newton_polygon(m, f, p)[2])
+And then we do a sanity check that the theorem holds for p = 7 and does not hold for p = 5::
+
+    sage: p = 7
+    sage: print(p % 4, p, newton_polygon(m, f, p)[2])
     3 7 ss
-    sage: for p in Pother:
-    ....:     print(p%4, p, newton_polygon(m, f, p)[2])
+
+    sage: p = 5
+    sage: print(p % 4, p, newton_polygon(m, f, p)[2])
     1 5 [1/3, 1/3, 1/3, 2/3, 2/3, 2/3]
+
+We verify that the second curve has good reduction at 3 (and in fact everywhere
+outside 2 and 7)::
 
     sage: (m, f) = curvesM8[1]
     sage: f.discriminant().factor(), m.factor()
     (-1 * 2^6 * 7^7, 2)
 
-    sage: P3 = [p for p in prime_range(10) if p % 4 == 3 and not p == 7]
-    sage: Pother = [p for p in prime_range(10) if p % 4 != 3 and not p == 2]
-    sage: for p in P3:
-    ....:     print(p%4, p, newton_polygon(m, f, p)[2])
+We verify that this curve is supersingular modulo 3::
+
+    sage: p = 3
+    sage: print(p % 4, p, newton_polygon(m, f, p)[2])
     3 3 ss
-    sage: for p in Pother:
-    ....:     print(p%4, p, newton_polygon(m, f, p)[2])
+
+We do a sanity check that it is not supersingular modulo 5::
+
+    sage: p = 5
+    sage: print(p % 4, p, newton_polygon(m, f, p)[2])
     1 5 [1/3, 1/3, 1/3, 2/3, 2/3, 2/3]
 
-And finally M16::
+
+Finally we do **Section 4** and the family M(16). Again we do this curve by curve.
+
+For the first curve we verify that it has good reduction outside 3 and 5.
+We also do a sanity check for all primes under 18 except for 3 and 5::
 
     sage: (m, f) = curvesM16[0]
+    sage: (m, f)
+    (5, x^4 - 24*x^3 + 3*x^2 + x)
     sage: f.discriminant().factor(), m.factor()
     (3^10, 5)
 
-    sage: P234 = [p for p in prime_range(18) if p % 5 in [2,3,4] and not p == 3]
-    sage: Pother = [p for p in prime_range(18) if p % 5 == 1]
+    sage: P234 = [p for p in prime_range(18) if p % 5 in [2, 3, 4]]
     sage: for p in P234:
-    ....:     print(p%5, p, newton_polygon(m, f, p)[2])
+    ....:     if p != 3:
+    ....:         print(p % 5, p, newton_polygon(m, f, p)[2])
     2 2 ss
     2 7 ss
     3 13 ss
     2 17 ss
+
+    sage: Pother = [p for p in prime_range(18) if p % 5 == 1]
     sage: for p in Pother:
-    ....:     print(p%5, p, newton_polygon(m, f, p)[2])
+    ....:     print(p % 5, p, newton_polygon(m, f, p)[2])
     1 11 [0, 0, 0, 1/3, 1/3, 1/3, 2/3, 2/3, 2/3, 1, 1, 1]
 
+For the second curve we verify that it has supersingular good reduction at 3,
+and we do the same sanity checks as well::
+
     sage: (m, f) = curvesM16[1]
+    sage: (m, f)
+    (5, x^4 - 7*x^2 + 7*x)
     sage: f.discriminant().factor(), m.factor()
     (7^4, 5)
 
-    sage: P234 = [p for p in prime_range(18) if p % 5 in [2,3,4] and not p == 7]
-    sage: Pother = [p for p in prime_range(18) if p % 5 == 1]
     sage: for p in P234:
-    ....:     print(p%5, p, newton_polygon(m, f, p)[2])
+    ....:     if p != 7:
+    ....:         print(p % 5, p, newton_polygon(m, f, p)[2])
     2 2 ss
     3 3 ss
     3 13 ss
     2 17 ss
+
     sage: for p in Pother:
-    ....:     print(p%5, p, newton_polygon(m, f, p)[2])
+    ....:     print(p % 5, p, newton_polygon(m, f, p)[2])
     1 11 [0, 0, 0, 1/3, 1/3, 1/3, 2/3, 2/3, 2/3, 1, 1, 1]
-    sage: GF(3)['x'](f) # and note 2 = -1 in F_3, so this is the curve printed in the paper:
-    x^4 + 2*x^2 + x
     
 
-Now let's take another curve and see whether it is supersingular::
+Finally as another sanity check we take a somewhat random curve
+and see whether it is supersingular::
 
     sage: (m, f) = curvesM16[0]
     sage: f = f + 1
